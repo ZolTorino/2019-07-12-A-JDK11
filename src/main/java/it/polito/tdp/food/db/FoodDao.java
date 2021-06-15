@@ -161,6 +161,7 @@ public class FoodDao {
 				+ "WHERE f1= fc1.food_code AND fc1.condiment_code=c1.condiment_code "
 				+ "AND f2= fc2.food_code AND fc2.condiment_code=c2.condiment_code "
 				+ "AND f1> f2 "
+				+"AND c1.condiment_code=c2.condiment_code "
 				+ "GROUP BY f1, f2 "
 				+ "HAVING COUNT(c2.condiment_code)>0 "
 				+ "  order by avg(c1.condiment_calories) DESC" ;

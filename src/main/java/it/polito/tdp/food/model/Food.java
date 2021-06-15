@@ -3,6 +3,7 @@ package it.polito.tdp.food.model;
 public class Food {
 	private Integer food_code;
 	private String display_name;
+	int peso;
 	
 	public Food(Integer food_code, String display_name) {
 		super();

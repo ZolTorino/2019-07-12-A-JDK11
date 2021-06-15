@@ -1,9 +1,11 @@
 package it.polito.tdp.food.model;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 import org.jgrapht.Graphs;
@@ -12,6 +14,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import it.polito.tdp.food.db.FoodDao;
+
 
 public class Model {
 	
@@ -59,17 +62,56 @@ public class Model {
 	
 	Food start;
 	LinkedList<Cucina> cucine=new LinkedList<>();
+	
 	HashMap<Integer, Food> preparati=new HashMap<>();
+	Double tempotot;
+	private PriorityQueue<Cucina> queue;
 	public void init(Food in, int k) {
 		start= in;
-		for(int i=0;i<k;i++)
-		{
-			cucine.add(new Cucina());
+		if(prossimi(in)!=null) {
+			LinkedList<Arco> lista= new LinkedList<>(prossimi(in));
+			this.queue=new PriorityQueue<Cucina>();
+			for(int i=0;i<k&&i<lista.size();i++)
+			{
+				queue.add(new Cucina(lista.get(i).f2,lista.get(i).peso));
+				System.out.println("Adiacenti al primo: "+ lista.get(i).f2.getDisplay_name()+"\n");
+			}
 		}
-		
-		
+		System.out.println("Dimensione coda: "+queue.size());
 	}
-	public void run() {
+	public String run(int k) {
+		while(!this.queue.isEmpty())
+		{
+			Cucina c=this.queue.poll();
+			preparati.put(c.f.getFood_code(),c.f);
+			LinkedList<Arco> next= new LinkedList<>(prossimi(c.f));
+			for(Arco a:next)
+			{
+				if(!preparati.containsValue(a.f2))
+						{
+							double start=c.t;
+							c.f=a.f2;
+							c.t=a.peso+start;
+							tempotot=c.t;
+							queue.add(c);
+							break;
+						}
+				
+			}
+			
+		}
+		return "Praparati "+ preparati.size()+" cibi in "+tempotot+ " min";
+	}
+	
+	public List<Arco> prossimi(Food p){
+		LinkedList<Arco> lista= new LinkedList<>();
+		for(Food f:Graphs.neighborListOf(grafo, p))
+		{
+			lista.add(new Arco(p,f,grafo.getEdgeWeight(grafo.getEdge(p, f))));
+		}
+		Collections.sort(lista, (a1,a2)->a1.peso.compareTo(a2.peso));
+		
+		return lista;
 		
 	}
 	

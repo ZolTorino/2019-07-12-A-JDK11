@@ -66,6 +66,8 @@ public class FoodController {
     void doSimula(ActionEvent event) {
     	txtResult.clear();
     	txtResult.appendText("Simulazione...");
+    	model.init(boxFood.getValue(),Integer.parseInt(txtK.getText()));
+    	txtResult.appendText(model.run(Integer.parseInt(txtK.getText())));
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
